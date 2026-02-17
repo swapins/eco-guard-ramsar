@@ -67,6 +67,73 @@ Unlike standard environmental loggers, Eco-Guard-Ramsar processes:
 
 ---
 
+## Hardware Deployment Platforms
+
+Eco-Guard-Ramsar supports dual-unit deployment with platform-specific optimizations:
+
+### Unit A: Physico-Chemical Monitoring (Raspberry Pi 4B)
+**For sensor data collection, MQTT publishing, and edge processing**
+- **Processor:** ARM Cortex-A72 (1.5 GHz quad-core)
+- **Power:** 2.5–3.5W (ideal for solar deployment)
+- **Sensors:** pH, Turbidity, Nitrogen via ADS1115 I2C ADC
+- **Communication:** Ethernet or WiFi 5
+- **Reference Guide:** [raspberry_pi_deployment.md](hardware_configs/raspberry_pi_deployment.md)
+
+### Unit B: Biological Detection (Jetson Nano)
+**For AI-based species detection with GPU-accelerated inference**
+- **Processor:** NVIDIA Tegra X1 + 128-core Maxwell GPU
+- **Power:** 5–10W (higher performance, GPU-optimized)
+- **Camera:** Raspberry Pi v2 (8 MP) via CSI interface
+- **Inference:** TensorFlow Lite with GPU delegate (120–150 ms latency)
+- **Reference Guide:** [jetson_nano_deployment.md](hardware_configs/jetson_nano_deployment.md)
+
+### Quick Hardware Comparison
+
+| Feature | Jetson Nano | Raspberry Pi 4B |
+|---------|-----------|---|
+| **Best For** | AI/computer vision detection | Sensor data + MQTT |
+| **Inference Speed** | 120–150 ms (GPU-accelerated) | 180–250 ms (CPU-only) |
+| **Power Consumption** | 5W idle → 10W inference | 2.5W idle → 5W active |
+| **GPIO/I2C Support** | Limited | Full flexibility (27 GPIO) |
+| **Total Cost** | ~$290 (with sensors) | ~$300 (with sensors) |
+
+👉 **See [hardware_configs/README.md](hardware_configs/README.md) for complete platform selection guide, hardware shopping list, and network topology.**
+
+---
+
+## Data Samples & Field Validation
+
+The `data_samples/` directory contains representative datasets from field deployments at Sasthamcotta Lake:
+
+### Available Datasets
+- **sensor_readings_2026_02.csv:** 30 days of hourly physico-chemical data
+  - pH, Turbidity (NTU), Nitrogen (mg/L), Temperature, Battery SOC, Signal Strength
+  - 720 measurements per month
+  
+- **biological_detections_2026_02.csv:** 30 days of AI classification results
+  - Species detected (Healthy Algae, Chaoborus spp., E. coli)
+  - Confidence scores (0.70–0.99 range)
+  - Model version tracking
+
+📊 **Load sample data for analysis:**
+```python
+import pandas as pd
+
+# Sensor data
+sensors = pd.read_csv('data_samples/sensor_readings_2026_02.csv')
+print(f"pH (mean): {sensors['ph'].mean():.2f}")
+print(f"Turbidity (mean): {sensors['turbidity_ntu'].mean():.2f}")
+
+# Biological detections
+bio = pd.read_csv('data_samples/biological_detections_2026_02.csv')
+high_conf = bio[bio['confidence_score'] > 0.90]
+print(f"High-confidence detections: {len(high_conf)}/{len(bio)}")
+```
+
+👉 **See [data_samples/README.md](data_samples/README.md) for data interpretation guide and usage examples.**
+
+---
+
 ## Tech Stack
 
 ### Hardware
@@ -95,8 +162,18 @@ eco-guard-ramsar/
 │   ├── __init__.py                 # Package initialization
 │   └── bio_monitor.py              # Biological indicator AI engine
 ├── models/                          # TensorFlow Lite model files
-├── data_samples/                   # Sample sensor data
-├── hardware_configs/               # Hardware-specific configs
+├── data_samples/                   # Representative field data
+│   ├── README.md                   # Data documentation
+│   ├── sensor_readings_2026_02.csv # 30 days of physico-chemical data
+│   └── biological_detections_2026_02.csv # 30 days of AI detection results
+├── hardware_configs/               # Platform-specific deployment guides
+│   ├── README.md                   # Hardware comparison & selection guide
+│   ├── jetson_nano_deployment.md   # Unit B setup (AI/GPU optimization)
+│   ├── raspberry_pi_deployment.md  # Unit A setup (sensors/GPIO)
+│   ├── sensor_calibration.yaml     # Analog sensor calibration values
+│   ├── mqtt_config.env             # MQTT broker credentials (template)
+│   ├── tflite_model_config.yaml    # TensorFlow Lite inference config
+│   └── power_management.yaml       # Solar charging & power budgets
 └── .git/                           # Version control
 ```
 
