@@ -1,0 +1,30 @@
+# Eco-Guard-Ramsar: Edge-AI Ecological Monitoring System
+# Dependencies for solar-powered Ramsar site monitoring units
+
+# Core Scientific Computing
+numpy>=1.24.0
+scipy>=1.10.0
+
+# Deep Learning & Edge Inference
+tensorflow-lite>=2.13.0
+# Uncomment for full TensorFlow (development/training):
+# tensorflow>=2.13.0
+
+# Data Processing & Logging
+pandas>=2.0.0
+
+# IoT & Communication
+paho-mqtt>=1.6.1
+
+# Hardware Support
+RPi.GPIO>=0.7.0  # For Raspberry Pi GPIO control
+adafruit-circuitpython-ads1x15>=2.2.0  # For ADC sensors
+
+# Utilities
+python-dotenv>=1.0.0  # For environment configuration
+Pillow>=9.5.0  # For image processing (biological indicator analysis)
+
+# Development Dependencies (optional)
+pytest>=7.3.0
+black>=23.3.0  # Code formatting
+pylint>=2.17.0  # Code linting
